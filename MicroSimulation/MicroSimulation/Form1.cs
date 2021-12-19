@@ -17,6 +17,8 @@ namespace MicroSimulation
         List<Person> Population = new List<Person>();
         List<BirthProbability> BirthPorbabilities = new List<BirthProbability>();
         List<DeathProbability> DeathProbabilities = new List<DeathProbability>();
+
+        Random rnd = new Random(49);
         
         public Form1()
         {
