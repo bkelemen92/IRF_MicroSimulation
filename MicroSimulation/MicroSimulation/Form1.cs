@@ -34,7 +34,7 @@ namespace MicroSimulation
             {
                 for (int i = 0; i < Population.Count; i++)
                 {
-
+                    SimulationStep(year, Population[i]);
                 }
 
                 int nbrOfMales = (from x in Population 
@@ -48,7 +48,33 @@ namespace MicroSimulation
 
         }
 
+        private void SimulationStep(int year, Person person)
+        {
+            if (!person.IsAlive) return;
 
+            byte age = (byte)(year - person.BirthYear);
+
+            double probDeath = (from x in DeathProbabilities
+                                where x.Gender == person.Gender && x.Age == age
+                                select x.Probability).FirstOrDefault();
+            
+            if (rnd.NextDouble() <= probDeath) person.IsAlive = false;
+
+            if(person.IsAlive && person.Gender == Gender.Female)
+            {
+                double probBirth = (from x in BirthPorbabilities
+                                    where x.Age == age
+                                    select x.Probability).FirstOrDefault();
+
+                if (rnd.NextDouble() <= probBirth)
+                {
+                    Person newborn = new Person() { BirthYear = year, NbrOfChildren = 0, Gender = (Gender)rnd.Next(1, 3) };
+                    Population.Add(newborn);
+                }
+            }
+        }
+
+        #region LoadFiles
         public List<Person> GetPopulation(string path)
         {
             List<Person> population = new List<Person>();
@@ -109,5 +135,6 @@ namespace MicroSimulation
             }
             return deathProb;
         }
+        #endregion
     }
 }
